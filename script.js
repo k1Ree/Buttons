@@ -1,98 +1,116 @@
-document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', () => {
     const inputField = document.getElementById('button-text');
     const addButton = document.getElementById('add-button');
+    const editModeButton = document.getElementById('edit-mode-button');
     const buttonsContainer = document.getElementById('buttons-container');
     const errorMessage = document.getElementById('error-message');
-    const editModeButton = document.getElementById('edit-mode-button');
-    
     let editMode = false;
-    let currentlyEditing = null;
+    let selectedButton = null;
 
-    // Добавление кнопки
-    addButton.addEventListener('click', function () {
-        const text = inputField.value.trim();
-        
+    // Добавление новой кнопки
+    addButton.addEventListener('click', () => {
+        const buttonText = inputField.value.trim();
+
         // Проверка на пустой инпут
-        if (text === '') {
-            inputField.classList.add('error');
-            errorMessage.classList.remove('hidden');
+        if (buttonText === '') {
+            showError();
             return;
         }
+
+        // Создание новой кнопки
+        createButton(buttonText);
         
-        // Создаем новую кнопку
-        createButton(text);
-        
-        // Очищаем инпут и убираем ошибку
+        // Очистка поля ввода и скрытие ошибки
         inputField.value = '';
-        inputField.classList.remove('error');
-        errorMessage.classList.add('hidden');
+        hideError();
     });
 
-    // Функция создания новой кнопки
+    // Функция для создания новой кнопки
     function createButton(text) {
-        const newButton = document.createElement('div');
+        const newButton = document.createElement('button');
         newButton.classList.add('generated-button');
         newButton.textContent = text;
-        
-        // Кнопка редактирования
-        const editBtn = document.createElement('button');
-        editBtn.textContent = '✏️';
-        editBtn.classList.add('edit-btn');
-        newButton.appendChild(editBtn);
 
-        // Кнопка удаления
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = '❌';
-        deleteBtn.classList.add('delete-btn');
-        newButton.appendChild(deleteBtn);
-
-        // Добавление инпута для редактирования
-        const editInput = document.createElement('input');
-        editInput.classList.add('edit-input');
-        editInput.style.display = 'none';
-        newButton.appendChild(editInput);
-
-        // Обработчик для удаления кнопки
-        deleteBtn.addEventListener('click', function () {
-            buttonsContainer.removeChild(newButton);
-        });
-
-        // Обработчик для редактирования текста кнопки
-        editBtn.addEventListener('click', function () {
-            editInput.value = newButton.textContent;
-            editInput.style.display = 'block';
-            currentlyEditing = newButton;
-        });
-
-        // Когда изменен текст кнопки
-        editInput.addEventListener('keypress', function (e) {
-            if (e.key === 'Enter') {
-                newButton.textContent = editInput.value;
-                newButton.appendChild(editBtn);
-                newButton.appendChild(deleteBtn);
-                editInput.style.display = 'none';
-                currentlyEditing = null;
+        // Обработчик клика для режима редактирования
+        newButton.addEventListener('click', () => {
+            if (editMode) {
+                handleEditMode(newButton);
             }
         });
 
         buttonsContainer.appendChild(newButton);
     }
 
-    // Включение/выключение режима редактирования
-    editModeButton.addEventListener('click', function () {
+    // Функция для включения/выключения режима редактирования
+    editModeButton.addEventListener('click', () => {
         editMode = !editMode;
+
         const buttons = document.querySelectorAll('.generated-button');
-        
         buttons.forEach(button => {
             if (editMode) {
                 button.classList.add('shake');
-                button.querySelector('.edit-btn').style.display = 'inline-block';
-                button.querySelector('.delete-btn').style.display = 'inline-block';
             } else {
                 button.classList.remove('shake');
-                button.querySelector('.edit-btn').style.display = 'none';
-                button.querySelector('.delete-btn').style.display = 'none';
             }
         });
+
+        // Если выключаем режим редактирования, сбрасываем выбранную кнопку
+        if (!editMode) {
+            selectedButton = null;
+        }
     });
+
+    // Функция для обработки выбора кнопки в режиме редактирования
+    function handleEditMode(button) {
+        selectedButton = button;
+
+        // Создаем панель с опциями (удалить, редактировать)
+        const optionsDiv = document.createElement('div');
+        optionsDiv.classList.add('options-panel');
+
+        const editInput = document.createElement('input');
+        editInput.type = 'text';
+        editInput.value = button.textContent;
+
+        const saveButton = document.createElement('button');
+        saveButton.textContent = 'Сохранить';
+
+        const deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Удалить';
+
+        // Обработчик удаления
+        deleteButton.addEventListener('click', () => {
+            buttonsContainer.removeChild(button);
+            buttonsContainer.removeChild(optionsDiv);
+        });
+
+        // Обработчик сохранения редактирования
+        saveButton.addEventListener('click', () => {
+            const newText = editInput.value.trim();
+            if (newText !== '') {
+                button.textContent = newText;
+            }
+            buttonsContainer.removeChild(optionsDiv);
+        });
+
+        // Добавляем элементы в панель
+        optionsDiv.appendChild(editInput);
+        optionsDiv.appendChild(saveButton);
+        optionsDiv.appendChild(deleteButton);
+
+        // Добавляем панель под выбранную кнопку
+        buttonsContainer.appendChild(optionsDiv);
+    }
+
+    // Функция для отображения ошибки
+    function showError() {
+        errorMessage.classList.remove('hidden');
+        inputField.classList.add('error-border');
+    }
+
+    // Функция для скрытия ошибки
+    function hideError() {
+        errorMessage.classList.add('hidden');
+        inputField.classList.remove('error-border');
+    }
 });
