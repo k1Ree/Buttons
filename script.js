@@ -1,101 +1,82 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const input = document.getElementById('input-text');
+    const inputField = document.getElementById('button-text');
     const addButton = document.getElementById('add-button');
-    const deleteModeButton = document.getElementById('delete-mode-button');
-    const editModeButton = document.getElementById('edit-mode-button');
     const buttonsContainer = document.getElementById('buttons-container');
+    const errorMessage = document.getElementById('error-message');
+    const editModeButton = document.getElementById('edit-mode-button');
     
-    // Элементы редактирования
-    const editSection = document.getElementById('edit-section');
-    const editInput = document.getElementById('edit-input');
-    const saveEditButton = document.getElementById('save-edit-button');
-    const cancelEditButton = document.getElementById('cancel-edit-button');
-    
-    let deleteMode = false;
     let editMode = false;
-    let editingButton = null; // Кнопка, которую мы редактируем
+    let currentlyEditing = null;
 
-    // Функция проверки уникальности текста кнопки
-    function isButtonTextUnique(text) {
-        const buttons = document.querySelectorAll('.generated-button');
-        return !Array.from(buttons).some(button => button.querySelector('span').textContent === text);
-    }
-
-    // Добавление новой кнопки
+    // Добавление кнопки
     addButton.addEventListener('click', function () {
-        const text = input.value.trim();
+        const text = inputField.value.trim();
         
+        // Проверка на пустой инпут
         if (text === '') {
-            alert('Введите текст для кнопки!');
+            inputField.classList.add('error');
+            errorMessage.classList.remove('hidden');
             return;
         }
-
-        if (!isButtonTextUnique(text)) {
-            alert('Кнопка с таким текстом уже существует!');
-            return;
-        }
-
-        // Создание кнопки
+        
+        // Создаем новую кнопку
         createButton(text);
-
-        // Очищаем инпут
-        input.value = '';
+        
+        // Очищаем инпут и убираем ошибку
+        inputField.value = '';
+        inputField.classList.remove('error');
+        errorMessage.classList.add('hidden');
     });
 
-    // Функция создания кнопки
+    // Функция создания новой кнопки
     function createButton(text) {
         const newButton = document.createElement('div');
         newButton.classList.add('generated-button');
+        newButton.textContent = text;
         
-        const buttonLabel = document.createElement('span');
-        buttonLabel.textContent = text;
-
+        // Кнопка редактирования
         const editBtn = document.createElement('button');
-        editBtn.textContent = 'Редактировать';
+        editBtn.textContent = '✏️';
         editBtn.classList.add('edit-btn');
-
-        const deleteBtn = document.createElement('button');
-        deleteBtn.textContent = 'x';
-        deleteBtn.classList.add('edit');
-        
-        // Добавляем элементы в кнопку
-        newButton.appendChild(buttonLabel);
         newButton.appendChild(editBtn);
+
+        // Кнопка удаления
+        const deleteBtn = document.createElement('button');
+        deleteBtn.textContent = '❌';
+        deleteBtn.classList.add('delete-btn');
         newButton.appendChild(deleteBtn);
 
-        // Добавляем обработчик для удаления кнопки
-        deleteBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
+        // Добавление инпута для редактирования
+        const editInput = document.createElement('input');
+        editInput.classList.add('edit-input');
+        editInput.style.display = 'none';
+        newButton.appendChild(editInput);
+
+        // Обработчик для удаления кнопки
+        deleteBtn.addEventListener('click', function () {
             buttonsContainer.removeChild(newButton);
         });
 
         // Обработчик для редактирования текста кнопки
-        editBtn.addEventListener('click', function (e) {
-            e.stopPropagation();
-            if (!deleteMode) {
-                editingButton = newButton;
-                editInput.value = buttonLabel.textContent;
-                editSection.style.display = 'block';
+        editBtn.addEventListener('click', function () {
+            editInput.value = newButton.textContent;
+            editInput.style.display = 'block';
+            currentlyEditing = newButton;
+        });
+
+        // Когда изменен текст кнопки
+        editInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                newButton.textContent = editInput.value;
+                newButton.appendChild(editBtn);
+                newButton.appendChild(deleteBtn);
+                editInput.style.display = 'none';
+                currentlyEditing = null;
             }
         });
 
-        // Добавляем кнопку на страницу
         buttonsContainer.appendChild(newButton);
     }
-
-    // Включение/выключение режима удаления
-    deleteModeButton.addEventListener('click', function () {
-        deleteMode = !deleteMode;
-        const buttons = document.querySelectorAll('.generated-button');
-        
-        buttons.forEach(button => {
-            if (deleteMode) {
-                button.classList.add('shake', 'edit-mode');
-            } else {
-                button.classList.remove('shake', 'edit-mode');
-            }
-        });
-    });
 
     // Включение/выключение режима редактирования
     editModeButton.addEventListener('click', function () {
@@ -104,39 +85,14 @@ document.addEventListener('DOMContentLoaded', function () {
         
         buttons.forEach(button => {
             if (editMode) {
-                button.classList.add('shake', 'edit-mode');
+                button.classList.add('shake');
+                button.querySelector('.edit-btn').style.display = 'inline-block';
+                button.querySelector('.delete-btn').style.display = 'inline-block';
             } else {
-                button.classList.remove('shake', 'edit-mode');
+                button.classList.remove('shake');
+                button.querySelector('.edit-btn').style.display = 'none';
+                button.querySelector('.delete-btn').style.display = 'none';
             }
         });
-    });
-
-    // Сохранение изменений текста кнопки
-    saveEditButton.addEventListener('click', function () {
-        const newText = editInput.value.trim();
-        
-        if (newText === '') {
-            alert('Текст не может быть пустым!');
-            return;
-        }
-
-        if (!isButtonTextUnique(newText)) {
-            alert('Кнопка с таким текстом уже существует!');
-            return;
-        }
-
-        // Обновляем текст кнопки
-        const buttonLabel = editingButton.querySelector('span');
-        buttonLabel.textContent = newText;
-
-        // Скрываем секцию редактирования
-        editSection.style.display = 'none';
-        editingButton = null;
-    });
-
-    // Отмена редактирования
-    cancelEditButton.addEventListener('click', function () {
-        editSection.style.display = 'none';
-        editingButton = null;
     });
 });
