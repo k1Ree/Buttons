@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +8,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Button Manager</h1>
         <div class="input-section">
-            <input type="text" id="button-text" placeholder="Enter button text">
-            <button id="add-button">Add Button</button>
-            <p id="error-message" class="hidden">Input cannot be empty!</p>
+            <input type="text" id="button-text" placeholder="Введите текст кнопки">
+            <button id="add-button">Добавить кнопку</button>
+            <p id="error-message" class="error hidden">Поле не может быть пустым!</p>
         </div>
-        
-        <div id="buttons-container"></div>
-        
-        <button id="edit-mode-button" class="edit-mode-btn">Edit Mode</button>
+        <div id="buttons-container" class="buttons-container"></div>
+        <button id="edit-mode-button" class="edit-mode-btn">Изменить</button>
     </div>
 
     <script src="script.js"></script>
