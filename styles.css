@@ -1,34 +1,109 @@
-.container {
-    margin: 20px;
+/* Основные стили */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
 }
 
-#input-text {
-    padding: 5px;
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 400px;
+    text-align: center;
+}
+
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* Секция ввода */
+.input-section {
+    margin-bottom: 20px;
+}
+
+#button-text {
+    padding: 10px;
+    width: 70%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
     font-size: 16px;
 }
 
-#add-button, #delete-mode-button {
-    padding: 5px 10px;
-    margin-left: 10px;
-    cursor: pointer;
+#button-text.error {
+    border-color: red;
 }
 
-button.generated-button {
-    margin: 5px;
+button {
+    padding: 10px 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+#add-button {
+    margin-left: 10px;
+}
+
+/* Сообщение об ошибке */
+#error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}
+
+.hidden {
+    display: none;
+}
+
+/* Контейнер для динамически добавляемых кнопок */
+#buttons-container {
+    margin-top: 20px;
+}
+
+.generated-button {
+    margin: 10px 5px;
+    padding: 10px 20px;
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
     position: relative;
 }
 
-button.generated-button.shake {
-    animation: shake 0.3s;
-    animation-iteration-count: infinite;
+/* Кнопки в режиме редактирования */
+.generated-button.shake {
+    animation: shake 0.3s infinite;
 }
 
-button.generated-button .edit {
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    25% { transform: translate(-1px, -1px) rotate(-1deg); }
+    50% { transform: translate(1px, -1px) rotate(1deg); }
+    75% { transform: translate(-1px, 1px) rotate(-1deg); }
+    100% { transform: translate(1px, 1px) rotate(0deg); }
+}
+
+/* Кнопки для редактирования и удаления */
+.edit-btn, .delete-btn {
     display: none;
     position: absolute;
-    top: -5px;
-    right: -5px;
-    background-color: red;
+    top: 5px;
+    background-color: #dc3545;
     color: white;
     border: none;
     border-radius: 50%;
@@ -38,20 +113,25 @@ button.generated-button .edit {
     cursor: pointer;
 }
 
-button.generated-button.edit-mode .edit {
-    display: block;
+.edit-btn {
+    right: 40px;
+    background-color: #ffc107;
 }
 
-@keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+.delete-btn {
+    right: 10px;
+}
+
+.edit-mode-btn {
+    margin-top: 20px;
+    background-color: #17a2b8;
+}
+
+input.edit-input {
+    margin-top: 10px;
+    padding: 5px;
+    width: 60%;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
 }
