@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const input = document.getElementById('input-text');
     const addButton = document.getElementById('add-button');
     const deleteModeButton = document.getElementById('delete-mode-button');
+    const editModeButton = document.getElementById('edit-mode-button');
     const buttonsContainer = document.getElementById('buttons-container');
     
     // Элементы редактирования
@@ -11,12 +12,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const cancelEditButton = document.getElementById('cancel-edit-button');
     
     let deleteMode = false;
+    let editMode = false;
     let editingButton = null; // Кнопка, которую мы редактируем
 
     // Функция проверки уникальности текста кнопки
     function isButtonTextUnique(text) {
         const buttons = document.querySelectorAll('.generated-button');
-        return !Array.from(buttons).some(button => button.textContent.replace('Редактировать', '').trim() === text);
+        return !Array.from(buttons).some(button => button.querySelector('span').textContent === text);
     }
 
     // Добавление новой кнопки
@@ -88,6 +90,20 @@ document.addEventListener('DOMContentLoaded', function () {
         
         buttons.forEach(button => {
             if (deleteMode) {
+                button.classList.add('shake', 'edit-mode');
+            } else {
+                button.classList.remove('shake', 'edit-mode');
+            }
+        });
+    });
+
+    // Включение/выключение режима редактирования
+    editModeButton.addEventListener('click', function () {
+        editMode = !editMode;
+        const buttons = document.querySelectorAll('.generated-button');
+        
+        buttons.forEach(button => {
+            if (editMode) {
                 button.classList.add('shake', 'edit-mode');
             } else {
                 button.classList.remove('shake', 'edit-mode');
