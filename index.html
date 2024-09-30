@@ -3,16 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Generator</title>
+    <title>Button Manager</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="container">
-        <input type="text" id="input-text" placeholder="Введите текст кнопки">
-        <button id="add-button">Добавить кнопку</button>
-        <button id="delete-mode-button">Режим удаления</button>
+        <h1>Button Manager</h1>
+        <div class="input-section">
+            <input type="text" id="button-text" placeholder="Enter button text">
+            <button id="add-button">Add Button</button>
+            <p id="error-message" class="hidden">Input cannot be empty!</p>
+        </div>
+        
         <div id="buttons-container"></div>
+        
+        <button id="edit-mode-button" class="edit-mode-btn">Edit Mode</button>
     </div>
+
     <script src="script.js"></script>
 </body>
 </html>
