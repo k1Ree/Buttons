@@ -1,29 +1,25 @@
 /* Основные стили */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f9;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    margin: 0;
 }
 
 .container {
-    background-color: #fff;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    width: 400px;
     text-align: center;
+    width: 100%;
+    max-width: 600px;
+    background-color: white;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
 }
 
-h1 {
-    margin-bottom: 20px;
-    color: #333;
-}
-
-/* Секция ввода */
 .input-section {
     margin-bottom: 20px;
 }
@@ -31,107 +27,87 @@ h1 {
 #button-text {
     padding: 10px;
     width: 70%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
     font-size: 16px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    outline: none;
+    transition: border-color 0.3s;
 }
 
-#button-text.error {
+#button-text.error-border {
     border-color: red;
+}
+
+#error-message {
+    color: red;
+    font-size: 14px;
+    margin-top: 10px;
+    transition: opacity 0.3s;
+}
+
+.error.hidden {
+    opacity: 0;
+}
+
+.error {
+    opacity: 1;
 }
 
 button {
     padding: 10px 15px;
-    background-color: #007BFF;
+    margin-top: 10px;
+    font-size: 16px;
+    cursor: pointer;
+    background-color: #007bff;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 16px;
+    transition: background-color 0.3s;
 }
 
 button:hover {
     background-color: #0056b3;
 }
 
-#add-button {
-    margin-left: 10px;
+.buttons-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-/* Сообщение об ошибке */
-#error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 5px;
-}
-
-.hidden {
-    display: none;
-}
-
-/* Контейнер для динамически добавляемых кнопок */
-#buttons-container {
-    margin-top: 20px;
-}
-
-.generated-button {
-    margin: 10px 5px;
-    padding: 10px 20px;
+button.generated-button {
     background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    position: relative;
 }
 
-/* Кнопки в режиме редактирования */
-.generated-button.shake {
-    animation: shake 0.3s infinite;
+button.generated-button:hover {
+    background-color: #218838;
+}
+
+button.edit-mode-btn {
+    background-color: #ffc107;
+}
+
+button.edit-mode-btn:hover {
+    background-color: #e0a800;
+}
+
+button.shake {
+    animation: shake 0.3s;
+    animation-iteration-count: infinite;
 }
 
 @keyframes shake {
     0% { transform: translate(1px, 1px) rotate(0deg); }
-    25% { transform: translate(-1px, -1px) rotate(-1deg); }
-    50% { transform: translate(1px, -1px) rotate(1deg); }
-    75% { transform: translate(-1px, 1px) rotate(-1deg); }
-    100% { transform: translate(1px, 1px) rotate(0deg); }
-}
-
-/* Кнопки для редактирования и удаления */
-.edit-btn, .delete-btn {
-    display: none;
-    position: absolute;
-    top: 5px;
-    background-color: #dc3545;
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.edit-btn {
-    right: 40px;
-    background-color: #ffc107;
-}
-
-.delete-btn {
-    right: 10px;
-}
-
-.edit-mode-btn {
-    margin-top: 20px;
-    background-color: #17a2b8;
-}
-
-input.edit-input {
-    margin-top: 10px;
-    padding: 5px;
-    width: 60%;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 16px;
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
 }
