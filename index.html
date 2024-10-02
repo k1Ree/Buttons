@@ -3,20 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Button Manager</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Редактируемые кнопки</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+
+        #adminPanel, #app {
+            text-align: center;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #buttonsContainer {
+            margin: 20px 0;
+        }
+
+        button {
+            margin: 5px;
+            padding: 10px;
+            font-size: 16px;
+            position: relative;
+        }
+
+        .edit-mode button {
+            animation: shake 0.5s infinite;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+
+        .deleteBtn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            color: red;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .hidden .deleteBtn {
+            display: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <div class="input-section">
-            <input type="text" id="button-text" placeholder="Введите текст кнопки">
-            <button id="add-button">Добавить кнопку</button>
-            <p id="error-message" class="error hidden">Поле не может быть пустым!</p>
-        </div>
-        <div id="buttons-container" class="buttons-container"></div>
-        <button id="edit-mode-button" class="edit-mode-btn">Изменить</button>
+    <div id="adminPanel">
+        <h2>Админ-панель</h2>
+        <label for="passwordInput">Введите пароль:</label>
+        <input type="password" id="passwordInput">
+        <button id="loginBtn">Войти</button>
+        <p id="errorMsg" class="error hidden">Неправильный пароль!</p>
     </div>
 
-    <script src="script.js"></script>
+    <div id="app" class="hidden">
+        <h1>Управляемые кнопки</h1>
+        <div id="buttonsContainer"></div>
+
+        <input type="text" id="buttonText" placeholder="Введите текст кнопки">
+        <button id="addButton">Добавить кнопку</button>
+
+        <button id="toggleEditMode">Включить режим редактирования</button>
+    </div>
+
+    <script>
+        const buttonsContainer = document.getElementById('buttonsContainer');
+        const addButton = document.getElementById('addButton');
+        const buttonText = document.getElementById('buttonText');
+        const toggleEditMode = document.getElementById('toggleEditMode');
+        const adminPanel = document.getElementById('adminPanel');
+        const loginBtn = document.getElementById('loginBtn');
+        const passwordInput = document.getElementById('passwordInput');
+        const errorMsg = document.getElementById('errorMsg');
+        const app = document.getElementById('app');
+
+        let isEditMode = false;
+        let buttons = [];
+
+        // Загрузка кнопок из Local Storage при загрузке страницы
+        window.onload = () => {
+            const savedButtons = JSON.parse(localStorage.getItem('buttons')) || [];
+            savedButtons.forEach(btn => {
+                createButton(btn.text);
+            });
+            buttons = savedButtons;
+        };
+
+        // Добавление новой кнопки
+        addButton.addEventListener('click', () => {
+            const text = buttonText.value.trim();
+            if (text === '') {
+                buttonText.classList.add('error');
+                return;
+            }
+            buttonText.classList.remove('error');
+            createButton(text);
+            buttons.push({ text });
+            saveButtonsToLocalStorage();
+            buttonText.value = '';
+        });
+
+        // Создание кнопки
+        function createButton(text) {
+            const button = document.createElement('button');
+            button.textContent = text;
+            button.classList.add('editableButton');
+            buttonsContainer.appendChild(button);
+
+            // Обработка событий в режиме редактирования
+            button.addEventListener('click', () => {
+                if (isEditMode) {
+                    const newText = prompt('Введите новый текст для кнопки:', button.textContent);
+                    if (newText && !buttons.some(b => b.text === newText)) {
+                        button.textContent = newText;
+                        updateButtonInLocalStorage(text, newText);
+                    }
+                }
+            });
+
+            // Удаление кнопки в режиме редактирования
+            const deleteBtn = document.createElement('span');
+            deleteBtn.textContent = '✖';
+            deleteBtn.classList.add('deleteBtn', 'hidden');
+            deleteBtn.addEventListener('click', (e) => {
+                e.stopPropagation();  // Остановка всплытия события, чтобы не вызывать редактирование
+                buttons = buttons.filter(b => b.text !== button.textContent);
+                buttonsContainer.removeChild(button);
+                saveButtonsToLocalStorage();
+            });
+
+            button.appendChild(deleteBtn);
+        }
+
+        // Сохранение кнопок в Local Storage
+        function saveButtonsToLocalStorage() {
+            localStorage.setItem('buttons', JSON.stringify(buttons));
+        }
+
+        // Обновление текста кнопки в Local Storage
+        function updateButtonInLocalStorage(oldText, newText) {
+            buttons = buttons.map(b => b.text === oldText ? { text: newText } : b);
+            saveButtonsToLocalStorage();
+        }
+
+        // Вход в режим редактирования через админ-панель
+        loginBtn.addEventListener('click', () => {
+            const password = passwordInput.value;
+            if (password === '1234') {
+                adminPanel.classList.add('hidden');
+                app.classList.remove('hidden');
+            } else {
+                errorMsg.classList.remove('hidden');
+            }
+        });
+
+        // Переключение режима редактирования
+        toggleEditMode.addEventListener('click', () => {
+            isEditMode = !isEditMode;
+            document.body.classList.toggle('edit-mode', isEditMode);
+
+            const deleteBtns = document.querySelectorAll('.deleteBtn');
+            deleteBtns.forEach(btn => {
+                btn.classList.toggle('hidden', !isEditMode);
+            });
+
+            toggleEditMode.textContent = isEditMode ? 'Отключить режим редактирования' : 'Включить режим редактирования';
+        });
+    </script>
 </body>
 </html>
