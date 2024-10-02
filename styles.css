@@ -1,113 +1,65 @@
-/* Основные стили */
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    justify-content: center;
     height: 100vh;
+    margin: 0;
+    background-color: #f0f0f0;
 }
 
-.container {
-    text-align: center;
-    width: 100%;
-    max-width: 600px;
-    background-color: white;
-    padding: 20px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.input-section {
-    margin-bottom: 20px;
-}
-
-#button-text {
-    padding: 10px;
-    width: 70%;
-    font-size: 16px;
-    border: 2px solid #ccc;
-    border-radius: 5px;
-    outline: none;
-    transition: border-color 0.3s;
-}
-
-#button-text.error-border {
-    border-color: red;
-}
-
-#error-message {
-    color: red;
-    font-size: 14px;
-    margin-top: 10px;
-    transition: opacity 0.3s;
-}
-
-.error.hidden {
-    opacity: 0;
+.hidden {
+    display: none;
 }
 
 .error {
-    opacity: 1;
+    color: red;
 }
 
-button {
-    padding: 10px 15px;
-    margin-top: 10px;
-    font-size: 16px;
-    cursor: pointer;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    transition: background-color 0.3s;
-}
-
-button:hover {
-    background-color: #0056b3;
-}
-
-.buttons-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 10px;
+#formContainer {
     margin-bottom: 20px;
 }
 
-button.generated-button {
-    background-color: #28a745;
+input {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
 }
 
-button.generated-button:hover {
-    background-color: #218838;
+button {
+    margin: 5px;
+    padding: 10px;
+    font-size: 16px;
+    position: relative;
 }
 
-button.edit-mode-btn {
-    background-color: #ffc107;
-}
-
-button.edit-mode-btn:hover {
-    background-color: #e0a800;
-}
-
-button.shake {
-    animation: shake 0.3s;
-    animation-iteration-count: infinite;
+button.editing {
+    animation: shake 0.5s infinite;
 }
 
 @keyframes shake {
-    0% { transform: translate(1px, 1px) rotate(0deg); }
-    10% { transform: translate(-1px, -2px) rotate(-1deg); }
-    20% { transform: translate(-3px, 0px) rotate(1deg); }
-    30% { transform: translate(3px, 2px) rotate(0deg); }
-    40% { transform: translate(1px, -1px) rotate(1deg); }
-    50% { transform: translate(-1px, 2px) rotate(-1deg); }
-    60% { transform: translate(-3px, 1px) rotate(0deg); }
-    70% { transform: translate(3px, 1px) rotate(-1deg); }
-    80% { transform: translate(-1px, -1px) rotate(1deg); }
-    90% { transform: translate(1px, 2px) rotate(0deg); }
-    100% { transform: translate(1px, -2px) rotate(-1deg); }
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+.deleteBtn {
+    position: absolute;
+    top: 0;
+    right: 0;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.edit-input {
+    margin-left: 10px;
+    width: 150px;
+}
+
+.hidden .deleteBtn {
+    display: none;
 }
