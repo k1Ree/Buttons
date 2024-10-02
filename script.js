@@ -1,116 +1,136 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const inputField = document.getElementById('button-text');
-    const addButton = document.getElementById('add-button');
-    const editModeButton = document.getElementById('edit-mode-button');
-    const buttonsContainer = document.getElementById('buttons-container');
-    const errorMessage = document.getElementById('error-message');
-    let editMode = false;
-    let selectedButton = null;
+const buttonsContainer = document.getElementById('buttonsContainer');
+const addButton = document.getElementById('addButton');
+const buttonText = document.getElementById('buttonText');
+const buttonUrl = document.getElementById('buttonUrl');
+const toggleEditMode = document.getElementById('toggleEditMode');
+const adminPanel = document.getElementById('adminPanel');
+const loginBtn = document.getElementById('loginBtn');
+const passwordInput = document.getElementById('passwordInput');
+const errorMsg = document.getElementById('errorMsg');
+const app = document.getElementById('app');
 
-    // Добавление новой кнопки
-    addButton.addEventListener('click', () => {
-        const buttonText = inputField.value.trim();
+let isEditMode = false;
+let buttons = [];
 
-        // Проверка на пустой инпут
-        if (buttonText === '') {
-            showError();
-            return;
+// Загрузка кнопок из Local Storage при загрузке страницы
+window.onload = () => {
+    const savedButtons = JSON.parse(localStorage.getItem('buttons')) || [];
+    savedButtons.forEach(btn => {
+        createButton(btn.text, btn.url);
+    });
+    buttons = savedButtons;
+};
+
+// Добавление новой кнопки
+addButton.addEventListener('click', () => {
+    const text = buttonText.value.trim();
+    const url = buttonUrl.value.trim();
+
+    if (text === '' || url === '') {
+        buttonText.classList.add('error');
+        return;
+    }
+
+    if (buttons.some(btn => btn.text === text)) {
+        alert('Текст кнопки должен быть уникальным!');
+        return;
+    }
+
+    buttonText.classList.remove('error');
+    buttonUrl.classList.remove('error');
+    createButton(text, url);
+    buttons.push({ text, url });
+    saveButtonsToLocalStorage();
+    buttonText.value = '';
+    buttonUrl.value = '';
+});
+
+// Создание кнопки
+function createButton(text, url) {
+    const button = document.createElement('button');
+    button.textContent = text;
+    button.classList.add('editableButton');
+    button.addEventListener('click', () => {
+        if (isEditMode) {
+            const editInput = document.createElement('input');
+            editInput.type = 'text';
+            editInput.classList.add('edit-input');
+            editInput.value = button.textContent;
+
+            button.replaceWith(editInput);
+            editInput.focus();
+
+            editInput.addEventListener('input', () => {
+                const newText = editInput.value.trim();
+                if (newText && !buttons.some(b => b.text === newText)) {
+                    button.textContent = newText;
+                    updateButtonInLocalStorage(text, newText);
+                    text = newText; // обновляем текст кнопки
+                }
+            });
+
+            editInput.addEventListener('blur', () => {
+                editInput.replaceWith(button);
+            });
+        } else {
+            window.open(url, '_blank');
         }
-
-        // Создание новой кнопки
-        createButton(buttonText);
-        
-        // Очистка поля ввода и скрытие ошибки
-        inputField.value = '';
-        hideError();
     });
 
-    // Функция для создания новой кнопки
-    function createButton(text) {
-        const newButton = document.createElement('button');
-        newButton.classList.add('generated-button');
-        newButton.textContent = text;
+    // Удаление кнопки
+    const deleteBtn = document.createElement('span');
+    deleteBtn.textContent = '✖';
+    deleteBtn.classList.add('deleteBtn');
+    deleteBtn.addEventListener('click', (e) => {
+        e.stopPropagation();  // Остановка всплытия события, чтобы не вызывать редактирование
+        buttons = buttons.filter(b => b.text !== button.textContent);
+        buttonsContainer.removeChild(button);
+        saveButtonsToLocalStorage();
+    });
 
-        // Обработчик клика для режима редактирования
-        newButton.addEventListener('click', () => {
-            if (editMode) {
-                handleEditMode(newButton);
-            }
-        });
+    button.appendChild(deleteBtn);
+    buttonsContainer.appendChild(button);
+}
 
-        buttonsContainer.appendChild(newButton);
+// Сохранение кнопок в Local Storage
+function saveButtonsToLocalStorage() {
+    localStorage.setItem('buttons', JSON.stringify(buttons));
+}
+
+// Обновление текста кнопки в Local Storage
+function updateButtonInLocalStorage(oldText, newText) {
+    buttons = buttons.map(b => b.text === oldText ? { ...b, text: newText } : b);
+    saveButtonsToLocalStorage();
+}
+
+// Вход в режим редактирования через админ-панель
+loginBtn.addEventListener('click', () => {
+    const password = passwordInput.value;
+    if (password === '1234') {
+        adminPanel.classList.add('hidden');
+        app.classList.remove('hidden');
+    } else {
+        errorMsg.classList.remove('hidden');
     }
+});
 
-    // Функция для включения/выключения режима редактирования
-    editModeButton.addEventListener('click', () => {
-        editMode = !editMode;
+// Переключение режима редактирования
+toggleEditMode.addEventListener('click', () => {
+    isEditMode = !isEditMode;
 
-        const buttons = document.querySelectorAll('.generated-button');
-        buttons.forEach(button => {
-            if (editMode) {
-                button.classList.add('shake');
-            } else {
-                button.classList.remove('shake');
-            }
-        });
-
-        // Если выключаем режим редактирования, сбрасываем выбранную кнопку
-        if (!editMode) {
-            selectedButton = null;
+    const buttons = document.querySelectorAll('.editableButton');
+    buttons.forEach(button => {
+        if (isEditMode) {
+            button.classList.add('editing');
+        } else {
+            button.classList.remove('editing');
         }
     });
 
-    // Функция для обработки выбора кнопки в режиме редактирования
-    function handleEditMode(button) {
-        selectedButton = button;
+    const deleteBtns = document.querySelectorAll('.deleteBtn');
+    deleteBtns.forEach(btn => {
+        btn.classList.toggle('hidden', !isEditMode);
+    });
 
-        // Создаем панель с опциями (удалить, редактировать)
-        const optionsDiv = document.createElement('div');
-        optionsDiv.classList.add('options-panel');
-
-        const editInput = document.createElement('input');
-        editInput.type = 'text';
-        editInput.value = button.textContent;
-
-        const saveButton = document.createElement('button');
-        saveButton.textContent = 'Сохранить';
-
-        const deleteButton = document.createElement('button');
-        deleteButton.textContent = 'Удалить';
-
-        // Обработчик удаления
-        deleteButton.addEventListener('click', () => {
-            buttonsContainer.removeChild(button);
-            buttonsContainer.removeChild(optionsDiv);
-        });
-
-        // Обработчик сохранения редактирования
-        saveButton.addEventListener('click', () => {
-            const newText = editInput.value.trim();
-            if (newText !== '') {
-                button.textContent = newText;
-            }
-            buttonsContainer.removeChild(optionsDiv);
-        });
-
-        // Добавляем элементы в панель
-        optionsDiv.appendChild(editInput);
-        optionsDiv.appendChild(saveButton);
-        optionsDiv.appendChild(deleteButton);
-
-        // Добавляем панель под выбранную кнопку
-        buttonsContainer.appendChild(optionsDiv);
-    }
-
-    // Функция для отображения ошибки
-    function showError() {
-        errorMessage.classList.remove('hidden');
-        inputField.classList.add('error-border');
-    }
-
-    // Функция для скрытия ошибки
-    function hideError() {
-        errorMessage.classList.add('hidden');
-        inputField.classList.remove('error-border');
-    }
+    toggleEditMode.textContent = isEditMode ? 'Отключить режим редактирования' : 'Включить режим редактирования';
 });
