@@ -28,6 +28,7 @@ addButton.addEventListener('click', () => {
 
     if (text === '' || url === '') {
         buttonText.classList.add('error');
+        buttonUrl.classList.add('error');
         return;
     }
 
@@ -50,6 +51,8 @@ function createButton(text, url) {
     const button = document.createElement('button');
     button.textContent = text;
     button.classList.add('editableButton');
+    
+    // В режиме редактирования
     button.addEventListener('click', () => {
         if (isEditMode) {
             const editInput = document.createElement('input');
@@ -60,11 +63,12 @@ function createButton(text, url) {
             button.replaceWith(editInput);
             editInput.focus();
 
+            // Редактирование текста кнопки в реальном времени
             editInput.addEventListener('input', () => {
                 const newText = editInput.value.trim();
                 if (newText && !buttons.some(b => b.text === newText)) {
                     button.textContent = newText;
-                    updateButtonInLocalStorage(text, newText);
+                    updateButtonInLocalStorage(text, newText, url);
                     text = newText; // обновляем текст кнопки
                 }
             });
@@ -77,7 +81,7 @@ function createButton(text, url) {
         }
     });
 
-    // Удаление кнопки
+    // Удаление кнопки через крестик
     const deleteBtn = document.createElement('span');
     deleteBtn.textContent = '✖';
     deleteBtn.classList.add('deleteBtn');
@@ -98,8 +102,8 @@ function saveButtonsToLocalStorage() {
 }
 
 // Обновление текста кнопки в Local Storage
-function updateButtonInLocalStorage(oldText, newText) {
-    buttons = buttons.map(b => b.text === oldText ? { ...b, text: newText } : b);
+function updateButtonInLocalStorage(oldText, newText, newUrl) {
+    buttons = buttons.map(b => b.text === oldText ? { ...b, text: newText, url: newUrl } : b);
     saveButtonsToLocalStorage();
 }
 
